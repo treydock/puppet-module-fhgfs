@@ -29,9 +29,22 @@ describe 'fhgfs' do
 
   it_behaves_like 'fhgfs::client'
 
+  context 'when mgmtd => true and meta => true' do
+    let(:params) {{ :mgmtd => true, :meta => true }}
+
+    it { should compile.with_all_deps }
+  end
+
+  context 'when storage => true and meta => true' do
+    let(:params) {{ :storage => true, :meta => true }}
+
+    it { should compile.with_all_deps }
+  end
+
   context 'when mgmtd => true' do
     let(:params) {{ :mgmtd => true }}
 
+    it { should compile.with_all_deps }
     it { should contain_anchor('fhgfs::start').that_comes_before('Class[fhgfs::mgmtd]') }
     it { should contain_class('fhgfs::mgmtd').that_comes_before('Anchor[fhgfs::end]') }
     it { should contain_anchor('fhgfs::end') }
@@ -46,6 +59,7 @@ describe 'fhgfs' do
   context 'when meta => true' do
     let(:params) {{ :meta => true }}
 
+    it { should compile.with_all_deps }
     it { should contain_anchor('fhgfs::start').that_comes_before('Class[fhgfs::meta]') }
     it { should contain_class('fhgfs::meta').that_comes_before('Anchor[fhgfs::end]') }
     it { should contain_anchor('fhgfs::end') }
@@ -60,6 +74,7 @@ describe 'fhgfs' do
   context 'when storage => true' do
     let(:params) {{ :storage => true }}
 
+    it { should compile.with_all_deps }
     it { should contain_anchor('fhgfs::start').that_comes_before('Class[fhgfs::storage]') }
     it { should contain_class('fhgfs::storage').that_comes_before('Anchor[fhgfs::end]') }
     it { should contain_anchor('fhgfs::end') }
@@ -74,6 +89,7 @@ describe 'fhgfs' do
   context 'when admon => true' do
     let(:params) {{ :admon => true }}
 
+    it { should compile.with_all_deps }
     it { should contain_anchor('fhgfs::start').that_comes_before('Class[fhgfs::admon]') }
     it { should contain_class('fhgfs::admon').that_comes_before('Anchor[fhgfs::end]') }
     it { should contain_anchor('fhgfs::end') }

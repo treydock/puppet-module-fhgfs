@@ -48,6 +48,7 @@ class fhgfs::params inherits fhgfs::defaults {
         'storage' => '/etc/fhgfs/netfilter.storage',
         'client'  => '/etc/fhgfs/netfilter.client',
       }
+      $conn_tcp_only_filter_file = '/etc/fhgfs/tcp-only-filter'
     }
 
     default: {

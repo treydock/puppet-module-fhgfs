@@ -29,6 +29,7 @@ shared_examples_for 'fhgfs::client::config' do
       'connMaxInternodeNum           = 12',
       'connInterfacesFile            = ',
       'connNetFilterFile             = ',
+      'connTcpOnlyFilterFile         = ',
       'connFallbackExpirationSecs    = 900',
       'connCommRetrySecs             = 600',
       'connAuthFile                  = ',
@@ -59,6 +60,16 @@ shared_examples_for 'fhgfs::client::config' do
 
   it do
     should contain_file('/etc/fhgfs/netfilter.client').with({
+      :ensure => 'absent',
+      :content  => /^$/,
+      :owner    => 'root',
+      :group    => 'root',
+      :mode     => '0644',
+    })
+  end
+
+  it do
+    should contain_file('/etc/fhgfs/tcp-only-filter').with({
       :ensure => 'absent',
       :content  => /^$/,
       :owner    => 'root',
@@ -198,6 +209,26 @@ shared_examples_for 'fhgfs::client::config' do
 
     it do
       verify_contents(catalogue, '/etc/fhgfs/netfilter.client', ['192.168.1.0/24'])
+    end
+  end
+
+  context 'when conn_tcp_only_filters => ["192.168.1.0/24"]' do
+    let(:params) {{ :conn_tcp_only_filters => ['192.168.1.0/24', '10.0.0.0/8'] }}
+
+    it do
+      verify_contents(catalogue, '/etc/fhgfs/fhgfs-client.conf', [
+        'connTcpOnlyFilterFile         = /etc/fhgfs/tcp-only-filter',
+      ])
+    end
+
+    it do
+      should contain_file('/etc/fhgfs/tcp-only-filter').with({
+        :ensure   => 'present',
+        :content  => "192.168.1.0/24\n10.0.0.0/8",
+        :owner    => 'root',
+        :group    => 'root',
+        :mode     => '0644',
+      })
     end
   end
 

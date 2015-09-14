@@ -42,6 +42,8 @@ class fhgfs (
   $meta_conn_net_filter_file    = $fhgfs::params::conn_net_filter_file['meta'],
   $storage_conn_net_filters     = [],
   $storage_conn_net_filter_file = $fhgfs::params::conn_net_filter_file['storage'],
+  $conn_tcp_only_filters        = [],
+  $conn_tcp_only_filter_file    = $fhgfs::params::conn_tcp_only_filter_file,
 
   # client specific - config
   $client_mount_path          = '/mnt/fhgfs',
@@ -153,6 +155,14 @@ class fhgfs (
   anchor { 'fhgfs::start': }
   anchor { 'fhgfs::end': }
 
+  if empty($conn_tcp_only_filters) {
+    $_conn_tcp_only_filter_file_value   = ''
+    $_conn_tcp_only_filter_file_ensure  = 'absent'
+  } else {
+    $_conn_tcp_only_filter_file_value   = $conn_tcp_only_filter_file
+    $_conn_tcp_only_filter_file_ensure  = 'present'
+  }
+
   ## fhgfs-client ##
 
   if $client or $utils_only {
@@ -191,10 +201,11 @@ class fhgfs (
     }
 
     $client_local_configs = {
-      'connPortShift'       => $conn_port_shift,
-      'connInterfacesFile'  => $client_conn_interfaces_file_value,
-      'connNetFilterFile'   => $client_conn_net_filter_file_value,
-      'sysMgmtdHost'        => $mgmtd_host,
+      'connPortShift'         => $conn_port_shift,
+      'connInterfacesFile'    => $client_conn_interfaces_file_value,
+      'connNetFilterFile'     => $client_conn_net_filter_file_value,
+      'connTcpOnlyFilterFile' => $_conn_tcp_only_filter_file_value,
+      'sysMgmtdHost'          => $mgmtd_host,
     }
 
     $helperd_default_configs  = merge($fhgfs::params::helperd_default_configs[$release], $helperd_local_configs)
@@ -281,11 +292,12 @@ class fhgfs (
     }
 
     $meta_local_configs = {
-      'connPortShift'       => $conn_port_shift,
-      'connInterfacesFile'  => $meta_conn_interfaces_file_value,
-      'connNetFilterFile'   => $meta_conn_net_filter_file_value,
-      'storeMetaDirectory'  => $meta_store_directory,
-      'sysMgmtdHost'        => $mgmtd_host,
+      'connPortShift'         => $conn_port_shift,
+      'connInterfacesFile'    => $meta_conn_interfaces_file_value,
+      'connNetFilterFile'     => $meta_conn_net_filter_file_value,
+      'connTcpOnlyFilterFile' => $_conn_tcp_only_filter_file_value,
+      'storeMetaDirectory'    => $meta_store_directory,
+      'sysMgmtdHost'          => $mgmtd_host,
     }
 
     $meta_default_configs  = merge($fhgfs::params::meta_default_configs[$release], $meta_local_configs)
@@ -328,6 +340,7 @@ class fhgfs (
       'connPortShift'         => $conn_port_shift,
       'connInterfacesFile'    => $storage_conn_interfaces_file_value,
       'connNetFilterFile'     => $storage_conn_net_filter_file_value,
+      'connTcpOnlyFilterFile' => $_conn_tcp_only_filter_file_value,
       'storeStorageDirectory' => $storage_store_directory,
       'sysMgmtdHost'          => $mgmtd_host,
     }

@@ -35,4 +35,14 @@ class fhgfs::storage::config {
     mode    => '0644',
   }
 
+  if ! defined(File[$fhgfs::conn_tcp_only_filter_file]) {
+    file { $fhgfs::conn_tcp_only_filter_file:
+      ensure  => $fhgfs::_conn_tcp_only_filter_file_ensure,
+      content => inline_template('<%= scope.lookupvar("fhgfs::conn_tcp_only_filters").join("\n") %>'),
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+    }
+  }
+
 }
